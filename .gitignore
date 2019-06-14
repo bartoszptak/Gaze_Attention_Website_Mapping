@@ -3,8 +3,8 @@
 # Edit at https://www.gitignore.io/?templates=python,jupyternotebook,visualstudiocode
 
 ## OWN
-data/shape_predictor_68_face_landmarks.dat
-data/model.pb
+shape_predictor_68_face_landmarks.dat
+model.pb
 
 ### JupyterNotebook ###
 .ipynb_checkpoints
