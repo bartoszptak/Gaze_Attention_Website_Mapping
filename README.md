@@ -1,13 +1,15 @@
-### To do
-- [x] zabezpieczenie przed zakryciem twarzy
-- [ ] usprawnienie działania modelu
-- [X] dodanie skrótów klawiszowych
+### Install requirements
 
-- [X] dodanie możliwościu wyboru kamery
-- [X] dodanie ekranu pomocy
-- [ ] ~~dodanie ekranu ładowania~~
-- [X] przyspieszenie ładowania modelu
-- [ ] poprawa interfejsu graficznego
+```
+conda create --name gazetracker python=3.6.4 tensorflow-gpu=1.12 
+conda activate gazetracker
+```
 
-- [ ] dodanie możliwości testowania śledzenia (screenshot stron)
-- [ ] dodanie mapy ciepła "na żywo" w trybie testu
+```
+conda install -c menpo dlib
+conda install -c anaconda tk
+```
+
+```
+pip install imutils==0.4.6 numpy==1.14 opencv-python==3.4.1.15 PyQt5==5.11.3 scikit-learn==0.21.2 pandas==0.23.4 seaborn==0.9.0 matplotlib==3.1.0 jupyter glob2
+```
