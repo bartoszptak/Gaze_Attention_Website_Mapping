@@ -9,9 +9,10 @@ import numpy as np
 class Gaze_Tracker:
     def __init__(self):
         self.detector = dlib.get_frontal_face_detector()
-        self.predictor = dlib.shape_predictor(path.join('data', 'shape_predictor_68_face_landmarks.dat'))
-        self.model = Model()
-        self.model.load('data/')
+        self.predictor = dlib.shape_predictor(
+            path.join('data', 'shape_predictor_68_face_landmarks.dat'))
+        #self.model = Model()
+        # self.model.load('data/')
         self.size = (144, 90)
 
         self.Lx = None
@@ -27,23 +28,24 @@ class Gaze_Tracker:
         self.Uy = None
         self.Dy = None
         self.cal = False
-    
+
     def search_eye(self, image, shape):
-            leftXs, leftYs = [], []
+        leftXs, leftYs = [], []
 
-            for x, y in shape[36:42]:
-                leftXs.append(x)
-                leftYs.append(y)
+        for x, y in shape[36:42]:
+            leftXs.append(x)
+            leftYs.append(y)
 
-            left = image[min(leftYs) - 5:max(leftYs) + 5, min(leftXs) - 5:max(leftXs) + 5]
-            return cv2.resize(left, self.size)
+        left = image[min(leftYs) - 5:max(leftYs) + 5,
+                     min(leftXs) - 5:max(leftXs) + 5]
+        return cv2.resize(left, self.size)
 
     def face_points(self, image):
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         rects = self.detector(gray, 1)
 
         shape = None
-        
+
         for (i, rect) in enumerate(rects):
             shape = self.predictor(gray, rect)
             shape = face_utils.shape_to_np(shape)
@@ -53,7 +55,7 @@ class Gaze_Tracker:
     @staticmethod
     def test_draw_face_points(image, shape):
         for (x, y) in shape:
-                cv2.circle(image, (x, y), 2, (0, 255, 0), -1)
+            cv2.circle(image, (x, y), 2, (0, 255, 0), -1)
 
         return image
 
@@ -87,7 +89,6 @@ class Gaze_Tracker:
             self.Rx = self.calculate_coordinate(self.cal_points[1])[0]
             self.Uy = self.calculate_coordinate(self.cal_points[2])[1]
             self.Dy = self.calculate_coordinate(self.cal_points[3])[1]
-
 
         Cx, Cy = self.calculate_coordinate(eye_point)
 
@@ -136,14 +137,14 @@ class Gaze_Tracker:
         cv2.line(image, (pX, pY - si), (pX, pY + si), (0, 0, 255), 3)
         return image
 
+
 if __name__ == '__main__':
     gt = Gaze_Tracker()
     cap = cv2.VideoCapture(0)
 
-    while True: 
+    while True:
         _, image = cap.read()
         image = cv2.flip(image, +1)
-
 
         shape = gt.face_points(image)
         im = gt.search_eye(image, shape)
@@ -151,7 +152,7 @@ if __name__ == '__main__':
 
         cv2.imshow("Face points", gt.test_draw_face_points(image, shape))
         cv2.imshow("Eye points", gt.test_draw_points(im, pkt))
-        
+
         k = cv2.waitKey(5) & 0xFF
         if k == 27:
             break

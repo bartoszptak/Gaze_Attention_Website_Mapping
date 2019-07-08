@@ -9,7 +9,7 @@ class Heat_Mapper:
         self.map = np.zeros([y, x], np.float32)
 
     def check_value(self, x, y):
-        return int(self.map[y,x] + 1)
+        return int(self.map[y, x] + 1)
 
     def draw_circle(self, x, y, size, value):
         cv2.circle(self.map, (x, y), size, value, -1)
@@ -18,8 +18,8 @@ class Heat_Mapper:
         if y < 0 or y > self.map.shape[0]:
             return
         if x < 0 or x > self.map.shape[1]:
-            return 
-        self.draw_circle(x, y, 35, self.check_value(x,y))
+            return
+        self.draw_circle(x, y, 35, self.check_value(x, y))
 
     def normalize(self):
         m = np.max(self.map)
@@ -27,7 +27,7 @@ class Heat_Mapper:
 
     def gaussian_blur(self):
         for i in range(30):
-            self.map = cv2.GaussianBlur(self.map, (35,35), 0)
+            self.map = cv2.GaussianBlur(self.map, (35, 35), 0)
 
     def get_map(self):
         self.normalize()
@@ -46,12 +46,11 @@ if __name__ == '__main__':
     hm = Heat_Mapper(img.shape[1]//2, img.shape[0]//2)
 
     for i in range(255):
-        hm.increment_value(125,25)
-        hm.increment_value(175,25)
+        hm.increment_value(125, 25)
+        hm.increment_value(175, 25)
 
     for i in range(100):
-        hm.increment_value(0,0)
-
+        hm.increment_value(0, 0)
 
     cv2.imshow('Image with map', hm.appyling_heatmap(img))
     cv2.waitKey(0)
