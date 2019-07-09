@@ -4,7 +4,9 @@
 
 ## OWN
 shape_predictor_68_face_landmarks.dat
-model.pb
+dataset/
+model/
+train/
 
 ### JupyterNotebook ###
 .ipynb_checkpoints
