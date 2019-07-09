@@ -1,8 +1,0 @@
-dlib == 19.15.0
-glob2 >= 0.6
-imutils >= 0.4.6
-numpy == 1.14.0
-opencv-python == 3.4.1.15
-PyQt5 >= 5.11.3
-tensorflow-gpu == 1.10.0
-requests
