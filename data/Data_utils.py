@@ -94,6 +94,7 @@ def postprocessing(heatmap):
         (minVal, maxVal, minLoc, maxLoc) = cv2.minMaxLoc(hm)            
         masks[j] = maxLoc
 
+    masks = np.multiply(masks, 4)
     z = masks.tolist()
     return [z[0][0],z[0][1], z[2][0],z[2][1], z[4][0], z[4][1]]
 

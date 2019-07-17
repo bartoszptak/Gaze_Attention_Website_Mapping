@@ -81,7 +81,7 @@ class Gaze_Tracker:
 
     def predict_eye(self, image):
         input_image = dataUT.preprocessing(image)
-        predicted = self.predict(input_image, self.session)
+        predicted = self.predict(input_image)
         return dataUT.postprocessing(predicted)
 
     @staticmethod
