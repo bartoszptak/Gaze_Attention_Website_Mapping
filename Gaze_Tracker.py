@@ -1,18 +1,22 @@
 from os import path
-from Model import Model
 from imutils import face_utils
 import dlib
 import cv2
 import numpy as np
-
+import tensorflow as tf
+import data.Data_utils as dataUT
 
 class Gaze_Tracker:
     def __init__(self):
         self.detector = dlib.get_frontal_face_detector()
         self.predictor = dlib.shape_predictor(
             path.join('data', 'shape_predictor_68_face_landmarks.dat'))
-        #self.model = Model()
-        # self.model.load('data/')
+        self.session = self.create_session(
+            path.join('data', 'model', 'inference.pb')
+        )
+        self.input = self.session.graph.get_tensor_by_name("import/input_1:0")
+        self.output = self.session.graph.get_tensor_by_name("import/0_conv_1x1_parts/BiasAdd:0")
+
         self.size = (144, 90)
 
         self.Lx = None
@@ -59,17 +63,26 @@ class Gaze_Tracker:
 
         return image
 
+    @staticmethod
+    def create_session(graph_path):
+        tf.reset_default_graph()
+        session = tf.Session()
+
+        with tf.gfile.GFile(graph_path,'rb') as f:
+            graph_def = tf.GraphDef()        
+            graph_def.ParseFromString(f.read())
+        
+        session.graph.as_default()
+        tf.import_graph_def(graph_def)
+        return session
+
+    def predict(self, image):
+        return self.session.run(self.output, feed_dict={self.input: image})[0]   
+
     def predict_eye(self, image):
-        image = cv2.resize(image, self.size)
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        gray = cv2.equalizeHist(gray)
-        gray = gray * 1. / 255
-        Zz = np.expand_dims(gray, axis=0)
-        Z = Zz[..., np.newaxis]
-        result = self.model.predict(Z)
-        return [result[0][0], result[0][1],
-                result[0][2], result[0][3],
-                result[0][4], result[0][5]]
+        input_image = dataUT.preprocessing(image)
+        predicted = self.predict(input_image, self.session)
+        return dataUT.postprocessing(predicted)
 
     @staticmethod
     def calculate_coordinate(p):

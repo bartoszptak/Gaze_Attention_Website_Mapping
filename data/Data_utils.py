@@ -75,17 +75,27 @@ class DataGenerator:
         return _image, _gthtmap
 
 
-def inference_image(image):
+def preprocessing(image):
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     image = cv2.resize(image, (128, 90))
     image = normalize(image)
 
-    _image = np.zeros(shape=(128, 128, 3), dtype=np.float)
+    _image = np.zeros(shape=(1, 128, 128, 3), dtype=np.float)
 
     y, x, _ = image.shape
-    _image[:y, :x, :] = image
+    _image[0, :y, :x, :] = image
 
     return _image
+
+def postprocessing(heatmap):
+    heatmap =  np.transpose(heatmap, (2,0,1))
+    masks = np.zeros((10, 2))
+    for j, hm in enumerate(heatmap):            
+        (minVal, maxVal, minLoc, maxLoc) = cv2.minMaxLoc(hm)            
+        masks[j] = maxLoc
+
+    z = masks.tolist()
+    return [z[0][0],z[0][1], z[2][0],z[2][1], z[4][0], z[4][1]]
 
 def extend_joins(joins):
     return [joins[0], joins[1], joins[0]+1, joins[1]+1,
