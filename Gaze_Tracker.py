@@ -81,7 +81,7 @@ class Gaze_Tracker:
 
     def predict_eye(self, image):
         input_image = dataUT.preprocessing(image)
-        predicted = self.predict(input_image, self.session)
+        predicted = self.predict(input_image)
         return dataUT.postprocessing(predicted)
 
     @staticmethod
@@ -152,14 +152,23 @@ class Gaze_Tracker:
 
 
 if __name__ == '__main__':
+    CAMERA_FLAG = False
+
     gt = Gaze_Tracker()
-    cap = cv2.VideoCapture(0)
+
+    if CAMERA_FLAG:
+        cap = cv2.VideoCapture(0)
+    else:
+        cap = cv2.VideoCapture('data/videos/video_test_1.mp4')
 
     while True:
         _, image = cap.read()
+        image = cv2.resize(image, (720,405))
         image = cv2.flip(image, +1)
 
         shape = gt.face_points(image)
+        if shape is None:
+            continue
         im = gt.search_eye(image, shape)
         pkt = gt.predict_eye(im)
 

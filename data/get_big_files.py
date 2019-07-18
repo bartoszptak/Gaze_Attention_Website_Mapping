@@ -56,5 +56,8 @@ if __name__ == "__main__":
     # datasets
     download_unzip_and_remove('1AQ-ToGm4-PG2HlEdnvVEzX73sf-XOBL5', 'dataset.zip')
 
+    # video examples
+    download_unzip_and_remove('1e0uiQ2QoCPF9AAyLmwaJgGJq7QQS4NNO', 'videos.zip')
+
     # train logs
     download_unzip_and_remove('1DyHAYc3qOjl4odaeI9YgW82PhTV5ZVHE', 'train.zip')
