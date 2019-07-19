@@ -23,7 +23,7 @@ class DataGenerator:
 
     def generator(self, batch_size, num_hgstack, sigma=1):
         train_input = np.zeros(
-            shape=(batch_size, self.inres[0], self.inres[1], 3), dtype=np.float)
+            shape=(batch_size, self.inres[0], self.inres[1], 1), dtype=np.float)
         gt_heatmap = np.zeros(
             shape=(batch_size, self.outres[0], self.outres[1], self.nparts), dtype=np.float)
 
@@ -32,7 +32,7 @@ class DataGenerator:
                 _image, _gthtmap = self.process_image(row, sigma)
                 _index = i % batch_size
 
-                train_input[_index, :, :, :] = _image
+                train_input[_index, :, :, 0] = _image
                 gt_heatmap[_index, :, :, :] = _gthtmap
 
                 if i % batch_size == (batch_size-1):
@@ -44,10 +44,10 @@ class DataGenerator:
 
     def process_image(self, row, sigma):
         image = cv2.imread(self.data_folder+row[0])
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        y, x, _ = image.shape
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        y, x = image.shape
         image = cv2.resize(image, (128, 90))
-        joins = extend_joins(row[1:])
+        joins = row[1:]
         joins = [int(l*128/x) if i % 2 == 0 else int(l*90/y)
                  for i, l in enumerate(joins)]
 
@@ -59,15 +59,15 @@ class DataGenerator:
         gtmap = generate_gtmap(joins, sigma, shape)
 
         _image = np.zeros(
-            shape=(self.inres[0], self.inres[1], 3), dtype=np.float)
+            shape=(self.inres[0], self.inres[1]), dtype=np.float)
 
         _gthtmap = np.zeros(
             shape=(self.outres[0], self.outres[1], self.nparts), dtype=np.float)
 
         y2, x2, _ = gtmap.shape
 
-        y, x, _ = image.shape
-        _image[:y, :x, :] = image
+        y, x = image.shape
+        _image[:y, :x] = image
 
         y, x, _ = gtmap.shape
         _gthtmap[:y, :x, :] = gtmap
@@ -76,14 +76,14 @@ class DataGenerator:
 
 
 def preprocessing(image):
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     image = cv2.resize(image, (128, 90))
     image = normalize(image)
 
-    _image = np.zeros(shape=(1, 128, 128, 3), dtype=np.float)
+    _image = np.zeros(shape=(1, 128, 128, 1), dtype=np.float)
 
-    y, x, _ = image.shape
-    _image[0, :y, :x, :] = image
+    y, x = image.shape
+    _image[0, :y, :x, 0] = image
 
     return _image
 
@@ -96,22 +96,13 @@ def postprocessing(heatmap):
 
     masks = np.multiply(masks, 4)
     z = masks.tolist()
-    return [z[0][0],z[0][1], z[2][0],z[2][1], z[4][0], z[4][1]]
+    return [z[0][0],z[0][1], z[1][0],z[1][1], z[2][0], z[2][1]]
 
-def extend_joins(joins):
-    return [joins[0], joins[1], joins[0]+1, joins[1]+1,
-            joins[2], joins[3], joins[2]+1, joins[3]+1,
-            joins[4], joins[5], joins[4]+1, joins[5]+1,
-            joins[6], joins[7], joins[8], joins[9], joins[10], joins[11], joins[12], joins[13]
-            ]
 
 
 def normalize(imgdata):
+    imgdata = cv2.equalizeHist(imgdata)
     imgdata = imgdata / 255.0
-    color_mean = np.array([0.4404, 0.4440, 0.4327], dtype=np.float)
-
-    for i in range(imgdata.shape[-1]):
-        imgdata[:, :, i] -= color_mean[i]
 
     return imgdata
 

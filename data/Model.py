@@ -11,7 +11,7 @@ class HourglassNet:
         self.num_classes = num_classes
         self.num_channels = num_channels
 
-        input = Input(shape=(inres[0], inres[1], 3))
+        input = Input(shape=(inres[0], inres[1], 1))
 
         front_features = self.create_front_module(input)
 
