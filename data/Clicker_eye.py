@@ -6,7 +6,7 @@ import os
 
 option = 'train' # train, test, valid
 
-files = glob.glob(os.path.join('dataset/'+option+'_imgs', '*.png'))
+files = glob.glob(os.path.join(option+'_imgs', '*.png'))
 
 
 if os.path.isfile(option+'_landmarks.csv'):
@@ -84,4 +84,4 @@ while i < len(imgs):
     print('Ok ({})'.format(len(imgs) - i))
     i += 1
 
-df.to_csv('dataset/'+option+'_landmarks.csv', index=False)
+df.to_csv(option+'_landmarks.csv', index=False)

@@ -96,7 +96,7 @@ def postprocessing(heatmap):
 
     masks = np.multiply(masks, 4)
     z = masks.tolist()
-    return [z[0][0],z[0][1], z[1][0],z[1][1], z[2][0], z[2][1]]
+    return [z[0][0],z[0][1], z[1][0],z[1][1], z[2][0], z[2][1], z[3][0], z[3][1], z[4][0], z[4][1], z[5][0], z[5][1], z[6][0], z[6][1]]
 
 
 

@@ -138,6 +138,11 @@ class Gaze_Tracker:
         cv2.circle(image, (int(points[0]), int(points[1])), 1, (0, 0, 255), -1)
         cv2.circle(image, (int(points[2]), int(points[3])), 1, (0, 0, 255), -1)
         cv2.circle(image, (int(points[4]), int(points[5])), 1, (0, 0, 255), -1)
+
+        cv2.circle(image, (int(points[6]), int(points[7])), 1, (0, 0, 255), -1)
+        cv2.circle(image, (int(points[8]), int(points[9])), 1, (0, 0, 255), -1)
+        cv2.circle(image, (int(points[10]), int(points[11])), 1, (0, 0, 255), -1)
+        cv2.circle(image, (int(points[12]), int(points[13])), 1, (0, 0, 255), -1)
         return image
 
     @staticmethod
@@ -172,7 +177,7 @@ if __name__ == '__main__':
         im = gt.search_eye(image, shape)
         pkt = gt.predict_eye(im)
 
-        cv2.imshow("Face points", gt.test_draw_face_points(image, shape))
+        #cv2.imshow("Face points", gt.test_draw_face_points(image, shape))
         cv2.imshow("Eye points", gt.test_draw_points(im, pkt))
 
         k = cv2.waitKey(5) & 0xFF
