@@ -1,3 +1,5 @@
+### Author: Bartosz Ptak
+
 ### Install requirements
 
 ```
