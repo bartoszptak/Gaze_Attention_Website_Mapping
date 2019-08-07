@@ -37,7 +37,7 @@ class DataGenerator:
 
                 if i % batch_size == (batch_size-1):
                     out_hmaps = []
-                    for m in range(num_hgstack):
+                    for _ in range(num_hgstack):
                         out_hmaps.append(gt_heatmap)
 
                     yield train_input, out_hmaps
@@ -51,9 +51,6 @@ class DataGenerator:
         joins = [int(l*128/x) if i % 2 == 0 else int(l*90/y)
                  for i, l in enumerate(joins)]
 
-        if self.is_train and np.random.choice(2, 1)[0] == 0:
-            image, joins = flip(image, joins)
-
         image = normalize(image)
         joins, shape = transform_joins(joins, image.shape, self.outres)
         gtmap = generate_gtmap(joins, sigma, shape)
@@ -64,7 +61,6 @@ class DataGenerator:
         _gthtmap = np.zeros(
             shape=(self.outres[0], self.outres[1], self.nparts), dtype=np.float)
 
-        y2, x2, _ = gtmap.shape
 
         y, x = image.shape
         _image[:y, :x] = image
@@ -75,29 +71,39 @@ class DataGenerator:
         return _image, _gthtmap
 
 
-def preprocessing(image):
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    image = cv2.resize(image, (128, 90))
-    image = normalize(image)
+def preprocessing(images):
+    left, right = images
 
-    _image = np.zeros(shape=(1, 128, 128, 1), dtype=np.float)
+    left = cv2.cvtColor(left, cv2.COLOR_BGR2GRAY)
+    left = cv2.resize(left, (128, 90))
+    left = normalize(left)
 
-    y, x = image.shape
-    _image[0, :y, :x, 0] = image
+    right = cv2.cvtColor(right, cv2.COLOR_BGR2GRAY)
+    right = cv2.resize(right, (128, 90))
+    right = normalize(right)
+
+    _image = np.zeros(shape=(2, 128, 128, 1), dtype=np.float)
+
+    _image[0, :90, :128, 0] = left
+    _image[1, :90, :128, 0] = right
 
     return _image
 
-def postprocessing(heatmap):
-    heatmap =  np.transpose(heatmap, (2,0,1))
-    masks = np.zeros((10, 2))
-    for j, hm in enumerate(heatmap):            
-        (minVal, maxVal, minLoc, maxLoc) = cv2.minMaxLoc(hm)            
-        masks[j] = maxLoc
 
-    masks = np.multiply(masks, 4)
-    z = masks.tolist()
-    return [z[0][0],z[0][1], z[1][0],z[1][1], z[2][0], z[2][1], z[3][0], z[3][1], z[4][0], z[4][1], z[5][0], z[5][1], z[6][0], z[6][1]]
+def postprocessing(heatmaps):
 
+    results = np.zeros((2, 7, 2))
+    for i, heatmap in enumerate(heatmaps):
+        heatmap = np.transpose(heatmap, (2, 0, 1))
+
+        masks = np.zeros((7, 2))
+        for j, hm in enumerate(heatmap):
+            (_, _, _, maxLoc) = cv2.minMaxLoc(hm)
+            masks[j] = maxLoc
+
+        results[i, :, :] = np.multiply(masks, 4)
+
+    return results
 
 
 def normalize(imgdata):

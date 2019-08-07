@@ -42,7 +42,6 @@ class MainWindow(QMainWindow):
         self.gt = Gaze_Tracker()
         self.cap = None
 
-
     def update_urlbar(self, q):
         self.urlbar.setText(q.toString())
         self.urlbar.setCursorPosition(0)
@@ -50,7 +49,7 @@ class MainWindow(QMainWindow):
     def navigate_to_url(self):
         q = QUrl(self.urlbar.text())
         if q.scheme() == '':
-            q.setScheme('http')
+            q.setScheme('https')
         self.browser.setUrl(q)
 
     def create_navbar(self):
@@ -76,14 +75,16 @@ class MainWindow(QMainWindow):
         self.navbar.addWidget(self.urlbar)
 
     def create_calibrate_button(self):
-        self.calibration_button = QAction(QIcon(os.path.join('data', 'UX', 'headhunting.png')), 'Calibration', self)
+        self.calibration_button = QAction(
+            QIcon(os.path.join('data', 'UX', 'headhunting.png')), 'Calibration', self)
         self.calibration_button.setStatusTip('Calibration')
         self.calibration_button.triggered.connect(self.button_calibrate_click)
         self.navbar.addAction(self.calibration_button)
         self.navbar.addSeparator()
 
     def create_start_button(self):
-        self.start_button = QAction(QIcon(os.path.join('data', 'UX', 'eye.png')), 'Start monitoring (press spacebar)', self)
+        self.start_button = QAction(QIcon(os.path.join(
+            'data', 'UX', 'eye.png')), 'Start monitoring (press spacebar)', self)
         self.start_button.setStatusTip('Start monitoring')
         self.start_button.setEnabled(False)
         self.start_button.triggered.connect(self.button_start_click)
@@ -91,7 +92,8 @@ class MainWindow(QMainWindow):
         self.navbar.addSeparator()
 
     def create_stop_button(self):
-        self.stop_button = QAction(QIcon(os.path.join('data', 'UX', 'hide.png')), 'Stop monitoring (press spacebar)', self)
+        self.stop_button = QAction(QIcon(os.path.join(
+            'data', 'UX', 'hide.png')), 'Stop monitoring (press spacebar)', self)
         self.stop_button.setStatusTip('Stop monitoring')
         self.stop_button.setEnabled(False)
         self.stop_button.triggered.connect(self.button_stop_click)
@@ -99,13 +101,15 @@ class MainWindow(QMainWindow):
         self.navbar.addSeparator()
 
     def create_about_button(self):
-        self.about_button = QAction(QIcon(os.path.join('data', 'UX', 'info.png')), 'Help', self)
+        self.about_button = QAction(
+            QIcon(os.path.join('data', 'UX', 'info.png')), 'Help', self)
         self.about_button.setStatusTip('Help')
         self.about_button.triggered.connect(self.button_about_click)
         self.navbar.addAction(self.about_button)
-        
+
     def create_exit_button(self):
-        self.exit_button = QAction(QIcon(os.path.join('data', 'UX', 'error.png')), 'Exit', self, triggered=self.close)
+        self.exit_button = QAction(QIcon(os.path.join(
+            'data', 'UX', 'error.png')), 'Exit', self, triggered=self.close)
         self.exit_button.setStatusTip('Exit program')
         self.navbar.addAction(self.exit_button)
 
@@ -116,33 +120,35 @@ class MainWindow(QMainWindow):
             else:
                 self.button_start_click()
 
-
     def button_start_click(self):
         self.isMonitoring = True
         self.browser_control()
         self.pix = QPixmap(self.browser.size())
-        self.map = Heat_Mapper(self.pix.size().width(), self.pix.size().height())
+        self.map = Heat_Mapper(self.pix.size().width(),
+                               self.pix.size().height())
         self.browser.render(self.pix)
 
         w, h = self.size().width(), self.size().height()
 
         while self.isMonitoring:
             _, image = self.cap.read()
-            r = self.gt.predict_position(image, w, h)
-            if r:
-                self.map.increment_value(r[0], r[1])
+            cor = self.gt.predict_position(image, w, h)
+            if cor:
+                self.map.increment_value(cor[0], cor[1])
             QCoreApplication.processEvents()
 
     def QPixmap_to_CvImage(self, pixmap):
-        incomingImage = pixmap.toImage().convertToFormat(QImage.Format_RGB888).rgbSwapped()
+        incomingImage = pixmap.toImage().convertToFormat(
+            QImage.Format_RGB888).rgbSwapped()
         ptr = incomingImage.bits()
         ptr.setsize(incomingImage.byteCount())
         return np.array(ptr, np.uint8).reshape(incomingImage.height(), incomingImage.width(), 3)
 
     def CvImage_to_QPixmap(self, cvImg):
-        height, width, channel = cvImg.shape
+        height, width, _ = cvImg.shape
         bytesPerLine = 3 * width
-        qImg = QImage(cvImg.data, width, height, bytesPerLine, QImage.Format_RGB888).rgbSwapped()
+        qImg = QImage(cvImg.data, width, height, bytesPerLine,
+                      QImage.Format_RGB888).rgbSwapped()
         return QPixmap(qImg)
 
     def button_stop_click(self):
@@ -205,18 +211,20 @@ class Result(QMainWindow):
         lay.addWidget(save_button)
 
         label = QLabel(self)
-        self.pix = QPixmap.scaled(self.pix, int(self.pix.width() *2/3), int(self.pix.height() *2/3))
+        self.pix = QPixmap.scaled(self.pix, int(
+            self.pix.width() * 2/3), int(self.pix.height() * 2/3))
         label.setPixmap(self.pix)
-        self.resize(int(self.pix.width() *2/3), int(self.pix.height() *2/3))
+        self.resize(int(self.pix.width() * 2/3), int(self.pix.height() * 2/3))
         lay.addWidget(label)
 
     def save(self):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         file_name, _ = QFileDialog.getSaveFileName(self, "QFileDialog.getSaveFileName()", "",
-                                                  "PNG Files (*.png)", options=options)
+                                                   "PNG Files (*.png)", options=options)
         if file_name:
             self.pix.save(file_name, 'png')
+
 
 class About(QMainWindow):
     def __init__(self, parent=None):
@@ -243,7 +251,7 @@ class Calibrate(QMainWindow):
         self.count = 0
         self.x = parent.size().width()
         self.y = parent.size().height()
-        
+
         capture = self.capture_combo()
 
         self.shortcut = QShortcut(QKeySequence("Space"), self)
@@ -266,9 +274,9 @@ class Calibrate(QMainWindow):
 
         label = QLabel(self)
         label.setText("Select camera input:")
-        label.move(50,30)
+        label.move(50, 30)
 
-        combo = QComboBox(self)        
+        combo = QComboBox(self)
 
         for el in captures:
             combo.addItem(str(int(el)))
@@ -319,7 +327,7 @@ class Calibrate(QMainWindow):
                 self.flags[4] = True
             window.cap = self.cap
             window.browser_control()
-            self.close()            
+            self.close()
 
     def check_available_captures(self):
         index = 0
@@ -334,9 +342,9 @@ class Calibrate(QMainWindow):
             index += 1
         return arr
 
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show()
     app.exec()
-
