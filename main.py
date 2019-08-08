@@ -119,6 +119,8 @@ class MainWindow(QMainWindow):
                 self.button_stop_click()
             else:
                 self.button_start_click()
+        else:
+            self.button_calibrate_click()
 
     def button_start_click(self):
         self.isMonitoring = True
@@ -133,6 +135,7 @@ class MainWindow(QMainWindow):
         while self.isMonitoring:
             _, image = self.cap.read()
             cor = self.gt.predict_position(image, w, h)
+            print(cor)
             if cor:
                 self.map.increment_value(cor[0], cor[1])
             QCoreApplication.processEvents()
@@ -165,6 +168,8 @@ class MainWindow(QMainWindow):
         dialog.show()
 
     def button_calibrate_click(self):
+        if self.cap:
+            self.cap.release()
         dialog = Calibrate(self)
         dialog.setWindowModality(Qt.WindowModal)
         dialog.show()
@@ -216,6 +221,9 @@ class Result(QMainWindow):
         label.setPixmap(self.pix)
         self.resize(int(self.pix.width() * 2/3), int(self.pix.height() * 2/3))
         lay.addWidget(label)
+
+        self.shortcut = QShortcut(QKeySequence("Esc"), self)
+        self.shortcut.activated.connect(self.close)
 
     def save(self):
         options = QFileDialog.Options()
@@ -273,7 +281,7 @@ class Calibrate(QMainWindow):
         captures = self.check_available_captures()
 
         label = QLabel(self)
-        label.setText("Select camera input:")
+        label.setText("Select camera:")
         label.move(50, 30)
 
         combo = QComboBox(self)
@@ -282,6 +290,9 @@ class Calibrate(QMainWindow):
             combo.addItem(str(int(el)))
 
         combo.move(50, 60)
+
+        if len(captures) == 0:
+            return 0
         return int(str(combo.currentText()))
 
     def clickMethod(self):

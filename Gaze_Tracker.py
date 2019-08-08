@@ -107,7 +107,9 @@ class Gaze_Tracker:
             x = det(d, xdiff) / div
             y = det(d, ydiff) / div
             return [x, y]
+
         c_0 = line_intersection(pkts[3:5], pkts[5:7])
+
 
         c_1 = pkts[2]
         c = np.mean((c_0, c_1), axis=0, dtype=np.int32)
@@ -125,12 +127,16 @@ class Gaze_Tracker:
             cosine_angle = np.dot(ba, bc) / \
                 (np.linalg.norm(ba) * np.linalg.norm(bc))
             return np.arccos(cosine_angle)*np.sign(-point[1])
+
         rad = get_angle(cor[2])
+        if np.isnan(rad):
+            rad = 0
 
         def rotate(x, y, theta):
             xr = np.cos(theta)*x-np.sin(theta)*y
             yr = np.sin(theta)*x+np.cos(theta)*y
             return [xr, np.abs(yr)]
+
         cor[1] = rotate(*cor[1], rad)
         cor[2] = rotate(*cor[2], rad)
 
@@ -144,37 +150,43 @@ class Gaze_Tracker:
         if prev is None:
             prev = np.stack([cor for _ in range(buff_size)])
 
-        buffer = np.empty((buff_size, 3, 2))
+        buffer = np.empty((buff_size, 2))
 
         buffer[:buff_size-1] = prev[1:]
         buffer[buff_size-1] = cor
-
         prev = buffer
 
         sw = sum(buffer[i]*(i+1)
                  for i in range(buff_size))/sum(range(buff_size+1))
 
-        return np.array(sw, dtype=np.int32), buffer
+        return np.array(sw), buffer
 
     def calculate_position(self, eye_point, res):
         if self.L is None or self.D is None:
-            self.L = self.calculate_coordinate(self.cal_points[0][0])
-            self.R = self.calculate_coordinate(self.cal_points[1][0])
-            self.U = self.calculate_coordinate(self.cal_points[2][0])
-            self.D = self.calculate_coordinate(self.cal_points[3][0])
+            self.L = self.calculate_coordinate(self.cal_points[0][0])[0]
+            self.R = self.calculate_coordinate(self.cal_points[1][0])[0]
+            self.U = self.calculate_coordinate(self.cal_points[2][0])[1]
+            self.D = self.calculate_coordinate(self.cal_points[3][0])[1]
 
             self.R = np.abs(self.R-self.L)
             self.D = np.abs(self.D-self.U)
 
         cor = self.calculate_coordinate(eye_point[0])
         cor, self.buffer = self.make_buffer(cor, self.buffer)
-
+ 
         cor[0] = np.abs(cor[0]-self.L)
         cor[1] = np.abs(cor[1]-self.U)
+
+        cor[0] *= 2/self.R
+        cor[1] *= 2/self.D
+
+        cor[0] = max(0, min(2, cor[0]))
+        cor[1] = max(0, min(2, cor[1]))
 
         cor -= 1
         cor = np.arcsin(cor)
         cor += np.pi/2
+
 
         return (int(cor[0]*res[0]/np.pi), int(cor[1]*res[1]/np.pi))
 
@@ -202,8 +214,9 @@ class Gaze_Tracker:
         if face is not None:
             eyes = self.search_eye(image, face)
             eyes[1] = cv2.flip(eyes[1], +1)
-            pkts = self.predict_eye(eyes)
-            return self.calculate_position(pkts, (screenX, screenY))
+            if eyes[0] is not None:
+                pkts = self.predict_eye(eyes)
+                return self.calculate_position(pkts, (screenX, screenY))
         else:
             return None
 
@@ -234,7 +247,7 @@ class Gaze_Tracker:
         return image
 
 if __name__ == '__main__':
-    CAMERA_FLAG = False
+    CAMERA_FLAG = True
 
     gt = Gaze_Tracker()
 
