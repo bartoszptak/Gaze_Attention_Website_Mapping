@@ -278,7 +278,7 @@ class Calibrate(QMainWindow):
         self.flags = [False, False, False, False, False, False]
 
     def capture_combo(self):
-        captures = self.check_available_captures()
+        captures = check_available_captures()
 
         label = QLabel(self)
         label.setText("Select camera:")
@@ -340,18 +340,16 @@ class Calibrate(QMainWindow):
             window.browser_control()
             self.close()
 
-    def check_available_captures(self):
-        index = 0
-        arr = []
-        while True:
-            cap = cv2.VideoCapture(index)
-            if not cap.read()[0]:
-                break
-            else:
-                arr.append(index)
+def check_available_captures():
+    arr = []
+    for index in range(10):
+        cap = cv2.VideoCapture(index)
+        if not cap.read()[0]:
+            continue
+        else:
+            arr.append(index)
             cap.release()
-            index += 1
-        return arr
+    return arr
 
 
 if __name__ == '__main__':
