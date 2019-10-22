@@ -1,4 +1,4 @@
-![eyes](https://github.com/bartoszptak/Gaze_Attention_Website_Mapping/blob/master/README_files/head.png?raw=true)
+![eyes](https://github.com/bartoszptak/Gaze_Points_Dataset_Model/blob/master/README_files/head.png?raw=true)
 ### Author: Bartosz Ptak
 If you use a dataset or model, please inform about the source.
 
@@ -37,9 +37,9 @@ download directly:
 
 Dataset consists of 2670 training data and 256 test and validation data. Data structure:
 - image file with resolution 120x60px:  
-![samle_eye](https://github.com/bartoszptak/Gaze_Attention_Website_Mapping/blob/master/README_files/eye_8.png?raw=true)  
+![samle_eye](https://github.com/bartoszptak/Gaze_Points_Dataset_Model/blob/master/README_files/eye_8.png?raw=true)  
 - image landmarks:  
-![landmarks](https://github.com/bartoszptak/Gaze_Attention_Website_Mapping/blob/master/README_files/description.png?raw=true)  
+![landmarks](https://github.com/bartoszptak/Gaze_Points_Dataset_Model/blob/master/README_files/description.png?raw=true)  
 
 ```
 file,L_x,L_y,R_x,R_y,CC_x,CC_y,CL_x,CL_y,CR_x,CR_y,CU_x,CU_y,CD_x,CD_y
