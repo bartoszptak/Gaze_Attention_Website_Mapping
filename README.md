@@ -47,4 +47,6 @@ test_imgs/eye_8.png,14,32,113,41,89,33,72,33,105,38,89,16,90,49
 ```
 
 ### Model
+Model based on [hg_blocks.py](https://github.com/yuanyuanli85/Stacked_Hourglass_Network_Keras/blob/master/src/net/hg_blocks.py) from [Stacked Hourglass Networks for Human Pose Estimation](https://arxiv.org/pdf/1603.06937.pdf) paper.
+
 #todo
