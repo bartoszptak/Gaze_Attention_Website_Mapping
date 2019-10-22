@@ -6,11 +6,11 @@ import os
 
 option = 'train' # train, test, valid
 
-files = glob.glob(os.path.join(option+'_imgs', '*.png'))
+files = glob.glob(os.path.join('data', 'dataset', option+'_imgs', '*.png'))
 
 
-if os.path.isfile(option+'_landmarks.csv'):
-    df = pd.read_csv(option+'_landmarks.csv')
+if os.path.isfile(os.path.join('data', 'dataset',option+'_landmarks.csv')):
+    df = pd.read_csv(os.path.join('data', 'dataset',option+'_landmarks.csv'))
 else:
     df = pd.DataFrame(columns=[
         'file', 
@@ -84,4 +84,4 @@ while i < len(imgs):
     print('Ok ({})'.format(len(imgs) - i))
     i += 1
 
-df.to_csv(option+'_landmarks.csv', index=False)
+df.to_csv('data', 'dataset', option+'_landmarks.csv', index=False)

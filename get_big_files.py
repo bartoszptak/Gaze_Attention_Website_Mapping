@@ -38,7 +38,7 @@ def download_unzip_and_remove(google_code, name):
         google_code, name)
 
     with zipfile.ZipFile(name, 'r') as zip_ref:
-        zip_ref.extractall('.')
+        zip_ref.extractall('data')
 
     os.remove(name)
 
@@ -48,16 +48,13 @@ if __name__ == "__main__":
 
     # face predictor
     download_file_from_google_drive(
-        '1TXJn_tAKkgmg9aMAVUrY8E2A9xUpoxLl', 'shape_predictor_68_face_landmarks.dat')
+        '1TXJn_tAKkgmg9aMAVUrY8E2A9xUpoxLl', os.path.join('data','shape_predictor_68_face_landmarks.dat'))
 
     # tensorflow model
-    download_unzip_and_remove('1wPEBjl6NjpQOhh-J2ZoR3XxxUPb7do4B', 'model.zip')
+    download_unzip_and_remove('1wPEBjl6NjpQOhh-J2ZoR3XxxUPb7do4B', os.path.join('data','model.zip'))
 
     # datasets
-    download_unzip_and_remove('1AQ-ToGm4-PG2HlEdnvVEzX73sf-XOBL5', 'dataset.zip')
-
-    # video examples
-    download_unzip_and_remove('1e0uiQ2QoCPF9AAyLmwaJgGJq7QQS4NNO', 'videos.zip')
+    download_unzip_and_remove('1AQ-ToGm4-PG2HlEdnvVEzX73sf-XOBL5', os.path.join('data','dataset.zip'))
 
     # train logs
-    download_unzip_and_remove('1DyHAYc3qOjl4odaeI9YgW82PhTV5ZVHE', 'train.zip')
+    download_unzip_and_remove('1DyHAYc3qOjl4odaeI9YgW82PhTV5ZVHE', os.path.join('data','train.zip'))

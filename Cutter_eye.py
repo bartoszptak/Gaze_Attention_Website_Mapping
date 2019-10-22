@@ -6,11 +6,14 @@ import glob
 
 
 detector = dlib.get_frontal_face_detector()
-predictor = dlib.shape_predictor(os.path.join('shape_predictor_68_face_landmarks.dat'))
+predictor = dlib.shape_predictor(os.path.join('data', 'shape_predictor_68_face_landmarks.dat'))
 
 cap = cv2.VideoCapture(0)
 
-files = glob.glob(os.path.join('dataset/'+'train_imgs', '*.png'))
+mode = 'train'
+
+
+files = glob.glob(os.path.join('data', 'dataset', f'{mode}_imgs', '*.png'))
 name = int(files[-1].split('.')[-2].split('_')[-1])+1
 
 while True:
@@ -45,10 +48,11 @@ while True:
 
         left = cv2.resize(left, (120, 60))
         right = cv2.resize(right, (120, 60))
+        right = cv2.flip(right, +1)
 
         if key == 32:
-            cv2.imwrite(os.path.join('dataset/'+'train_imgs', 'eye_{}.png'.format(str(name))), left)
-            cv2.imwrite(os.path.join('dataset/'+'train_imgs', 'eye_{}.png'.format(str(name))), right)
+            cv2.imwrite(os.path.join('data', 'dataset', f'{mode}_imgs', f'eye_{name}.png', left))
+            cv2.imwrite(os.path.join('data', 'dataset', f'{mode}_imgs', f'eye_{name+1}.png', right))
             print("Take eyeshot!")
             name += 2
         elif key == ord('q'):
