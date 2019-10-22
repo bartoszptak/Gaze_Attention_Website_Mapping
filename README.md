@@ -62,5 +62,5 @@ Model based on [hg_blocks.py](https://github.com/yuanyuanli85/Stacked_Hourglass_
 2. Result heatmaps
 ![heatmaps](https://github.com/bartoszptak/Gaze_Points_Dataset_Model/blob/master/README_files/eye_heatmaps.png)
 
-3. Result points
+3. Result points  
 ![points](https://github.com/bartoszptak/Gaze_Points_Dataset_Model/blob/master/README_files/eye_points.png?raw=true)
