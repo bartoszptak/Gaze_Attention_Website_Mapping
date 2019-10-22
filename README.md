@@ -49,4 +49,18 @@ test_imgs/eye_8.png,14,32,113,41,89,33,72,33,105,38,89,16,90,49
 ### Model
 Model based on [hg_blocks.py](https://github.com/yuanyuanli85/Stacked_Hourglass_Network_Keras/blob/master/src/net/hg_blocks.py) from [Stacked Hourglass Networks for Human Pose Estimation](https://arxiv.org/pdf/1603.06937.pdf) paper.
 
-#todo
+### Train
+- loss (MSE multiplied by 4 because heatmaps are scaled + punishment for the wrong side from the inside of the eye)  
+![loss](https://github.com/bartoszptak/Gaze_Points_Dataset_Model/blob/master/README_files/loss_plot.png?raw=true)  
+- metric (MAE multiplied by 4 because heatmaps are scaled)  
+![metric](https://github.com/bartoszptak/Gaze_Points_Dataset_Model/blob/master/README_files/metric_plot.png?raw=true)
+
+### Sample
+1. Input image:  
+![im](https://github.com/bartoszptak/Gaze_Points_Dataset_Model/blob/master/README_files/eye.png?raw=true)
+
+2. Result heatmaps
+![heatmaps](https://github.com/bartoszptak/Gaze_Points_Dataset_Model/blob/master/README_files/eye_heatmaps.png)
+
+3. Result points
+![points](https://github.com/bartoszptak/Gaze_Points_Dataset_Model/blob/master/README_files/eye_points.png?raw=true)
